@@ -13,25 +13,48 @@ function displayImage(input) {
 }
 
 async function loadImageFromUrl(imageURL) {
-  var image = document.getElementById('displayedImage');
+  let image = document.getElementById('displayedImage');
   image.src = imageURL;
   image.style.display = 'block';
-  updateDescription("generating description...");
-  const data = await getImageDescription(imageURL)
+  updateDescription("generating description...", 'imageDescription');
+  const data = await generateImageDescription(imageURL)
   // console.log(description);
-  updateDescription(data.description);
+  updateDescription(data.description, 'imageDescription');
 }
 
-function updateDescription(text) {
-  document.getElementById('imageDescription').textContent = text;
+async function getImage(id, prompt) {
+  let useDescription = false;
+  if (id === 'get-image-btn') {
+    useDescription = true;
+    prompt = document.getElementById('imageDescription').textContent;
+  }
+  updateDescription("generating image...", 'image-placeholder-message');
+
+  const data = await generateImage(useDescription, prompt);
+  if (data) {
+    updateDescription("", 'image-placeholder-message');
+  };
+  const imageURL = data.imageData.data[0].url;
+  const revisedPrompt = data.imageData.data[0].revised_prompt;
+  // console.log(data.imageData.data[0].revised_prompt);
+  // console.log(data.imageData.data[0].url);
+  let image = document.getElementById('generatedImage');
+  image.src = imageURL;
+  image.style.display = 'block';
+  updateDescription(revisedPrompt, 'revisedPrompt');
 }
 
-const copyToClipboard = () => {
-  let text = document.getElementById("imageDescription").textContent;
+function updateDescription(text, id) {
+  document.getElementById(id).textContent = text;
+}
+
+const copyToClipboard = (id) => {
+  console.log("id", id);
+  let text = document.getElementById(id).textContent;
   navigator.clipboard.writeText(text);
 };
 
-async function getImageDescription(imageURL) {
+async function generateImageDescription(imageURL) {
 
   try {
     const response = await fetch('/vision', {
@@ -49,3 +72,23 @@ async function getImageDescription(imageURL) {
   }
 }
 
+async function generateImage(useDescription=true, prompt) {
+  if (useDescription) {
+    prompt = document.getElementById('imageDescription').textContent;
+  }
+  try {
+    const response = await fetch('/dall-e', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({prompt}),
+    });
+
+    const data = await response.json();
+    // console.log("image data: ", data);
+    return data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
