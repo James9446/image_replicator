@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Upload and Description</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="./css/main.css">
+<style>
+  #imageDescription {
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 10px; /* Add padding */
+    margin: 5px; /* Add margin */
+    display: block;
+    max-height: 100%; /* Set maximum height */
+  }
+</style>
+</head>
+<body class="bg-white text-black">
+
+<div class="min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-4xl bg-gray-100 p-6 rounded-lg shadow-md">
+    <h3 class="text-2xl font-bold mb-4">Generate Image Description</h3>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+      <label for="imageUpload" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Upload Image
+        <input id="imageUpload" type="file" class="hidden" accept="image/*" onchange="displayImage(this)" />
+      </label>
+      <div class="flex-1 md:ml-4 mt-4 md:mt-0">
+        <input id="imageUrl" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Enter image URL" onchange="loadImageFromUrl(this.value)">
+      </div>
+    </div>
+    <div class="flex flex-col md:flex-row">
+      <div class="w-full md:w-1/2 p-4 bg-gray-300 rounded-lg mb-4 md:mb-0 md:mr-4">
+        <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
+          <img id="displayedImage" src="" alt="Uploaded Image" class="max-w-full max-h-full" style="display: none;" />
+          <!-- Image will be displayed here -->
+          <!-- <span>Image preview</span> -->
+        </div>
+      </div>
+      <div class="w-full md:w-1/2 p-4 bg-gray-300 rounded-lg">
+        <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
+          <!-- Description will be displayed here -->
+          <span id="imageDescription"></span>
+        </div>
+        <button onclick="copyToClipboard()" id="copy-btn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-4" type="button">
+          Copy
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src='./js/main.js'></script>
+</body>
+</html>
