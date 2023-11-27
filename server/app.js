@@ -52,15 +52,18 @@ app.post('/vision', async (req, res) => {
 
     const description = await apiResponse.data.choices[0].message.content;
 
-    console.log(description);
-
-    // console.log(JSON.stringify(apiResponse.data));
     // Handle the API response as needed
     res.status(200).json({description});
   } catch (error) {
     // Handle errors if the API request fails
-    console.error('Error:', error);
-    res.status(500).json({ error: 'An error occurred while processing the request.' });
+    if (error.response) {
+      console.log(error.response.status);
+      console.log(error.response.data);
+      res.status(error.response.status).json({ error: error.response.data });
+    } else {
+        console.log(error.message);
+        res.status(500).json({ error: error.message });
+    }
   }
 });
 
@@ -91,8 +94,14 @@ app.post('/dall-e', async (req, res) => {
     res.status(200).json({imageData});
   } catch (error) {
     // Handle errors if the API request fails
-    console.error('Error:', error);
-    res.status(500).json({ error: 'An error occurred while processing the request.' });
+    if (error.response) {
+      console.log(error.response.status);
+      console.log(error.response.data);
+      res.status(error.response.status).json({ error: error.response.data });
+    } else {
+        console.log(error.message);
+        res.status(500).json({ error: error.message });
+    }
   }
 });
 

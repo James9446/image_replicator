@@ -1,45 +1,50 @@
 // HANDLE CLIENT-SIDE ACTIONS
 
+// UPLOAD
 // handle images uploaded from local machine and generate description
 function loadImageFromFile(input) {
   if (input.files && input.files[0]) {
     var reader = new FileReader();
     reader.onload = async function (e) {
       const base64Image = e.target.result;
-      console.log("e.target.result", base64Image);
+
       displayImage('original-image', base64Image);
 
       // Create placeholder text while description is being generated
-      updateTextElement("generating description...", 'image-description');
+      updateTextElement('image-description', "generating description...");
     
       // Call server to generate image description
       const data = await generateImageDescription(base64Image)
-      updateTextElement(data.description, 'image-description');
+      
+      // Update client with server response data
+      updateTextElement('image-description', data.description);
       updateRadioForNaturalImages(data.description);
     };
     reader.readAsDataURL(input.files[0]);
   }
 }
 
-
+// URL
 // handle images uploaded from url and generate description
 async function loadImageFromUrl(imageURL) {
+  createImageLink('original-image-link', imageURL);
   displayImage('original-image', imageURL);
 
   // Create placeholder text while description is being generated
-  updateTextElement("generating description...", 'image-description');
+  updateTextElement('image-description', "generating description...");
 
   // Call server to generate image description
   const data = await generateImageDescription(imageURL)
-  updateTextElement(data.description, 'image-description');
-
+  
+  // Update client with server response data
+  updateTextElement('image-description', data.description);
   updateRadioForNaturalImages(data.description);
 }
 
-
+// GENERATE IMAGE
 // handle image generation request from client
 async function getImage(id, isVivid) {
-  hideImage('generatedImage');
+  hideImage('generated-image');
 
   // determine which prompt to use
   let prompt;
@@ -51,28 +56,28 @@ async function getImage(id, isVivid) {
   };
 
   // determine which style to use
-  let style;
-  if (isVivid) {
-    style = 'vivid';
-  } else {
-    style = 'natural';
-  };
+  const style = isVivid ? 'vivid' : 'natural';
   
   // show placeholder message
-  updateTextElement("generating image...", 'image-placeholder-message');
+  updateTextElement('image-placeholder-message', "generating image...");
+  // cleanup revised prompt
+  updateTextElement('revised-prompt', "");
 
   // Call server to generate image
   const requestBody = { prompt, style };
   const data = await generateImage(requestBody);
 
-  // hide the placeholder message
+  // hide the placeholder message once image is generated
   if (data) {
-    updateTextElement("", 'image-placeholder-message');
+    updateTextElement('image-placeholder-message', "");
   };
+  
+  // Update client with server response data
   const imageURL = data.imageData.url;
   const revisedPrompt = data.imageData.revised_prompt;
-  displayImage('generatedImage', imageURL);
-  updateTextElement(revisedPrompt, 'revised-prompt');
+  displayImage('generated-image', imageURL);
+  createImageLink('generated-image-link', imageURL);
+  updateTextElement('revised-prompt', revisedPrompt);
 }
 
 
@@ -90,34 +95,26 @@ function hideImage(id) {
   image.style.display = 'none';
 }
 
-function updateTextElement(text, id) {
+function createImageLink(id, imageURL) {
+  let link = document.getElementById(id);
+  link.style.display = 'contents';
+  link.href = imageURL;
+};
+
+function updateTextElement(id, text) {
   document.getElementById(id).textContent = text;
 }
 
 function copyToClipboard(id) {
-  console.log("id", id);
-  let text = document.getElementById(id).textContent;
+  const text = document.getElementById(id).textContent;
   navigator.clipboard.writeText(text);
 };
 
-function downloadImage(id) {
-  // var image = document.getElementById(id);
-  //   var imageUrl = image.getAttribute('src');
-  //   var imageName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-  //   var link = document.createElement('a');
-  //   link.href = imageUrl;
-  //   link.download = imageName;
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // let image = document.getElementById(id);
-  // let link = document.createElement('a');
-  // link.href = image.src;
-  // link.download = 'image.png';
-  // link.click();
+function copyImageURL(id) {
+  const link = document.getElementById(id).src;
+  navigator.clipboard.writeText(link);
 };
 
-// DATA UTILITY FUNCTIONS
 function updateRadioForNaturalImages(imageDescription) {
   const isNatural = imageDescription.includes("'natural'");
   if (isNatural) {
@@ -126,8 +123,8 @@ function updateRadioForNaturalImages(imageDescription) {
   }
 }
 
-
-
+// downloadImage() function is a possible todo 
+// function downloadImage(id) {};
 
 
 // BACKEND REQUESTS
