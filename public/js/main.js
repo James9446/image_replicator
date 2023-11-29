@@ -14,7 +14,11 @@ function loadImageFromFile(input) {
       updateTextElement('image-description', "generating description...");
     
       // Call server to generate image description
-      const data = await generateImageDescription(base64Image)
+      const temperature = Number(document.getElementById("temp-value").textContent);
+      const imageURL = base64Image;
+      const body = { imageURL, temperature };
+      const data = await generateImageDescription(body)
+      // const data = await generateImageDescription(base64Image)
       
       // Update client with server response data
       updateTextElement('image-description', data.description);
@@ -34,7 +38,9 @@ async function loadImageFromUrl(imageURL) {
   updateTextElement('image-description', "generating description...");
 
   // Call server to generate image description
-  const data = await generateImageDescription(imageURL)
+  const temperature = Number(document.getElementById("temp-value").textContent);
+  const body = { imageURL, temperature };
+  const data = await generateImageDescription(body)
   
   // Update client with server response data
   updateTextElement('image-description', data.description);
@@ -64,8 +70,8 @@ async function getImage(id, isVivid) {
   updateTextElement('revised-prompt', "");
 
   // Call server to generate image
-  const requestBody = { prompt, style };
-  const data = await generateImage(requestBody);
+  const body = { prompt, style };
+  const data = await generateImage(body);
 
   // hide the placeholder message once image is generated
   if (data) {
@@ -80,6 +86,15 @@ async function getImage(id, isVivid) {
   updateTextElement('revised-prompt', revisedPrompt);
 }
 
+// TEMPERATURE SLIDER
+// const slider = document.getElementById("temp-slider");
+// const output = document.getElementById("temp-value");
+
+// output.innerHTML = slider.value / 100;
+
+// slider.oninput = function() {
+//   output.innerHTML = this.value / 100;
+// }
 
 
 
@@ -128,14 +143,14 @@ function updateRadioForNaturalImages(imageDescription) {
 
 
 // BACKEND REQUESTS
-async function generateImageDescription(imageURL) {
+async function generateImageDescription(body) {
   try {
     const response = await fetch('/vision', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({imageURL}),
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();
@@ -145,14 +160,14 @@ async function generateImageDescription(imageURL) {
   }
 }
 
-async function generateImage(requestBody) {
+async function generateImage(body) {
   try {
     const response = await fetch('/dall-e', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();

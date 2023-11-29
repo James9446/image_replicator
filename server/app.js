@@ -15,9 +15,15 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public', 'about.html'));
+});
+
 // Generate an image description
 app.post('/vision', async (req, res) => {
-  const {imageURL} = req.body;
+  const {imageURL, temperature} = req.body;
+  console.log("temperature: ", temperature);
+
   const key = process.env.OPEN_API_KEY;
   const completionsURL = 'https://api.openai.com/v1/chat/completions'; 
   const visionBody = {
@@ -28,7 +34,7 @@ app.post('/vision', async (req, res) => {
         "content": [
           {
             "type": "text", 
-            "text": "Describe what’s in this image. Inlcude style, composition, colors, shapes, textures, lighting and any other details that would help someone understand what’s in the image. At the end of the descrption always provide a imageType catorization where the image is categorized as either 'vivid' or 'natural', vivid means the image looks hyper-real, while natural means the image looks less hyper-real."
+            "text": "Describe what’s in this image. Inlcude style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the descrption always provide an imageType catorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic."
           },
           {
             "type": "image_url",
@@ -69,8 +75,8 @@ app.post('/vision', async (req, res) => {
 
 // Genrate an image 
 app.post('/dall-e', async (req, res) => {
-  console.log(req.body);
   const {prompt, style} = req.body;
+  console.log("style: ", style);
   const key = process.env.OPEN_API_KEY;
   const imageGenerationURL = 'https://api.openai.com/v1/images/generations'; 
   const imageGenerationBody = {
