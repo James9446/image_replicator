@@ -14,11 +14,10 @@ function loadImageFromFile(input) {
       updateTextElement('image-description', "generating description...");
     
       // Call server to generate image description
-      const temperature = Number(document.getElementById("temp-value").textContent);
       const imageURL = base64Image;
+      const temperature = Number(document.getElementById("temp-value").textContent);
       const body = { imageURL, temperature };
       const data = await generateImageDescription(body)
-      // const data = await generateImageDescription(base64Image)
       
       // Update client with server response data
       updateTextElement('image-description', data.description);
@@ -31,7 +30,6 @@ function loadImageFromFile(input) {
 // URL
 // handle images uploaded from url and generate description
 async function loadImageFromUrl(imageURL) {
-  createImageLink('original-image-link', imageURL);
   displayImage('original-image', imageURL);
 
   // Create placeholder text while description is being generated
@@ -87,14 +85,14 @@ async function getImage(id, isVivid) {
 }
 
 // TEMPERATURE SLIDER
-// const slider = document.getElementById("temp-slider");
-// const output = document.getElementById("temp-value");
+const slider = document.getElementById("temp-slider");
+const output = document.getElementById("temp-value");
 
-// output.innerHTML = slider.value / 100;
+output.innerHTML = slider.value / 100;
 
-// slider.oninput = function() {
-//   output.innerHTML = this.value / 100;
-// }
+slider.oninput = function() {
+  output.innerHTML = this.value / 100;
+}
 
 
 

@@ -22,8 +22,6 @@ app.get('/about', (req, res) => {
 // Generate an image description
 app.post('/vision', async (req, res) => {
   const {imageURL, temperature} = req.body;
-  console.log("temperature: ", temperature);
-
   const key = process.env.OPEN_API_KEY;
   const completionsURL = 'https://api.openai.com/v1/chat/completions'; 
   const visionBody = {
@@ -34,7 +32,7 @@ app.post('/vision', async (req, res) => {
         "content": [
           {
             "type": "text", 
-            "text": "Describe what’s in this image. Inlcude style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the descrption always provide an imageType catorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic."
+            "text": "Describe what’s in this image. Inlcude style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the descrption always provide a style catorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic. When making this categorization always include single quotation marks around the word 'vivid' or 'natural'. Example 1: \"\"\"The image style is 'vidid'.\"\"\" Example 2: \"\"\"The image style is 'natural'.\"\"\"",
           },
           {
             "type": "image_url",
@@ -45,7 +43,8 @@ app.post('/vision', async (req, res) => {
         ]
       }
     ],
-    "max_tokens": 500
+    "max_tokens": 500,
+    "temperature": temperature,
   }
   try {
     // Make a POST request to the API endpoint
@@ -76,7 +75,6 @@ app.post('/vision', async (req, res) => {
 // Genrate an image 
 app.post('/dall-e', async (req, res) => {
   const {prompt, style} = req.body;
-  console.log("style: ", style);
   const key = process.env.OPEN_API_KEY;
   const imageGenerationURL = 'https://api.openai.com/v1/images/generations'; 
   const imageGenerationBody = {
