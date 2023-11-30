@@ -111,20 +111,29 @@
       
     </div>
 
-    <div class="flex flex-col">
+    <!-- <div class="flex flex-col">
       <p class="text-xl">Temperature: <span id="temp-value"></span></p>
       <input class="py-2 max-w-[33%]" id="temp-slider" type="range" min="0" max="200" value="50">
-    </div>
+    </div> -->
 
     <!-- <div class="py-4">
       <textarea id="prompt-input" name="image-prompt" cols="40" rows="3" placeholder="Enter Prompt" class="rounded-lg py-2 px-3 w-full" ></textarea>
     </div> -->
     
-    <div class="flex flex-col mt-4">
+    <div class="flex flex-col mt-6">
+
       <!-- Grey box 1 -->
       <div class="w-full mb-6 p-4 bg-gray-300 rounded-lg">
-        <h4 class="text-xl font-bold mb-4">Original Image</h4>
-        <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
+        <div class="flex justify-between">
+          <h4 class="text-xl pt-3 font-bold">Original Image</h4>
+          <div class="flex mt-1 mx-4 flex-col justify-end">
+            <p class="flex text-xl">Temperature: <span class="flex w-2 px-2 mr-2" id="temp-value"></span></p>
+            <input class="flex mt-2 mb-0.5 w-full" id="temp-slider" type="range" min="0" max="200" value="50">
+          </div>
+        </div>
+        
+        <!-- Display Box 1 -->
+        <div class="h-72 mt-4 bg-gray-400 rounded flex items-center justify-center text-white">
           <!-- Original Image will be displayed here -->
             <img id="original-image" src="" alt="Uploaded Image" class="max-w-full max-h-full" style="display: none;" />
         </div>
@@ -136,7 +145,8 @@
       <!-- Grey box 2 -->
       <div class="w-full p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">Description</h4>
-        <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
+        <!-- Display Box 2 -->
+        <div class="h-72 bg-gray-400 rounded flex items-center justify-center text-white">
           <!-- Description will be displayed here -->
           <span id="image-description"></span>
         </div>
@@ -153,34 +163,39 @@
 <!-- <div class="flex flex-col md:flex-row items-center justify-center p-4"> -->
   <!-- grey column 2 -->
   <div class="w-full ml-4 max-w-2xl p-6 bg-gray-100 rounded-lg shadow-md">
-    <h3 class="text-2xl font-bold mb-4">Generate Image</h3>
+    <h3 class="text-2xl font-bold mb-2">Generate Image</h3>
 
-    <div class="flex justify-between">
-      <!-- Old location for Use Description and Use Prompt buttons -->
+    <!-- Old location for Use Description and Use Prompt buttons -->
+    <!-- Old location for Style Configuration -->
+    <!-- <div class="flex justify-between">
       <div>
         
       </div>
-      <div class="flex flex-col px-6">
-        <label for="vivid-radio" class="radio-wrapper">
-          <input id="vivid-radio" type="radio" name="imageType" class="radio-input" checked>
-          <span class="radio-label">Vivid</span>
-        </label>
-        <label for="natural-radio" class="radio-wrapper">
-          <input id="natural-radio" type="radio" name="imageType" class="radio-input">
-          <span class="radio-label">Natural</span>
-        </label>
-      </div>
-    </div>
+    </div> -->
 
 
-    <div class="py-4">
-      <textarea id="prompt-input" name="image-prompt" cols="40" rows="3" placeholder="Enter Prompt" class="rounded-lg py-2 px-3 w-full" ></textarea>
+    <div class="py-2">
+      <textarea id="prompt-input" class="rounded-lg py-2 px-3 w-full" name="image-prompt" cols="40" rows="1" placeholder="Enter Prompt" ></textarea>
     </div>
-    <div class="flex flex-col">
+    <div class="flex flex-col mt-2">
       <!-- Grey box 3 -->
       <div class="w-full mb-6 mt-1 p-4 bg-gray-300 rounded-lg">
-        <h4 class="text-xl font-bold mb-4">New Image</h4>
-        <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
+        <div class="flex justify-between">
+          <h4 class="text-xl pt-3 font-bold">New Image</h4>
+          <!-- <p class="flex text-xl">Style:</p> -->
+          <div class="flex flex-col pb-4 px-6">
+            <label for="vivid-radio" class="radio-wrapper">
+              <input id="vivid-radio" type="radio" name="imageType" class="radio-input" checked>
+              <span class="radio-label text-xl">Vivid</span>
+            </label>
+            <label for="natural-radio" class="radio-wrapper">
+              <input id="natural-radio" type="radio" name="imageType" class="radio-input">
+              <span class="radio-label text-xl">Natural</span>
+            </label>
+          </div>
+        </div>
+        <!-- Display Box 3 -->
+        <div class="h-72 bg-gray-400 rounded flex items-center justify-center text-white">
           <span id="image-placeholder-message"></span>
           <!-- Generated Image will be displayed here -->
           <a id="generated-image-link" href="" target="_blank" style="display: none;">
@@ -206,7 +221,8 @@
       <!-- Grey box 4 -->
       <div class="w-full p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">Revised Prompt</h4>
-        <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
+        <!-- Display Box 4 -->
+        <div class="h-72 bg-gray-400 rounded flex items-center justify-center text-white">
           <!-- Description will be displayed here -->
           <span id="revised-prompt"></span>
         </div>
