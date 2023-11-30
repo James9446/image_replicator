@@ -110,5 +110,7 @@ app.post('/dall-e', async (req, res) => {
 });
 
 app.listen(port, () => {
+  const start = Date(Date.now());
+  console.log(`Server start time: ${start}`)
   console.log(`Server is running at PORT:${port}`);
 });

@@ -90,67 +90,75 @@
 </header>
 <body class="bg-white text-black">
 
-<div class="flex flex-col items-center justify-center p-4">
-  <div class="w-full max-w-4xl bg-gray-100 p-6 rounded-lg shadow-md">
-    <h3 class="text-2xl font-bold mb-4">Generate Image Description</h3>
+<div class="flex flex-col md:flex-row justify-center p-4">
+  <!-- grey column 1 -->
+  <div class="w-full mr-4 max-w-2xl bg-gray-100 p-6 rounded-lg shadow-md">
+    <h3 class="text-2xl font-bold mb-4">Generate Description of Image</h3>
     
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+    <div class="flex flex-col mb-4 md:flex-row justify-between items-start md:items-center">
       <!-- <div class="flex justify-between"> -->
-      <label for="image-upload" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+      <label for="image-upload" class="bg-blue-500 py-2 px-4 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline">
         Upload Image
         <input id="image-upload" onchange="loadImageFromFile(this)" type="file" class="hidden" accept="image/*" />
       </label>
-      
+       <span class="text-xl px-4">OR</span>
 
-        <div  class="flex-1 md:ml-4 mt-4 md:mt-0">
+        <div  class="flex-1 md:mt-0">
           <input id="image-url" onchange="loadImageFromUrl(this.value)" type="text" placeholder="Enter Image URL" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" >
         </div>
-  
         
       <!-- </div> -->
       
     </div>
+
+    <div class="flex flex-col">
+      <p class="text-xl">Temperature: <span id="temp-value"></span></p>
+      <input class="py-2 max-w-[33%]" id="temp-slider" type="range" min="0" max="200" value="50">
+    </div>
+
+    <!-- <div class="py-4">
+      <textarea id="prompt-input" name="image-prompt" cols="40" rows="3" placeholder="Enter Prompt" class="rounded-lg py-2 px-3 w-full" ></textarea>
+    </div> -->
     
-    <div class="flex flex-col md:flex-row">
-      <div class="w-full md:w-1/2 p-4 bg-gray-300 rounded-lg mb-4 md:mb-0 md:mr-4">
+    <div class="flex flex-col mt-4">
+      <!-- Grey box 1 -->
+      <div class="w-full mb-6 p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">Original Image</h4>
         <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
           <!-- Original Image will be displayed here -->
             <img id="original-image" src="" alt="Uploaded Image" class="max-w-full max-h-full" style="display: none;" />
         </div>
-        <div class="flex flex-col py-2">
-          <p>Temperature: <span id="temp-value">  </span></p>
-          <input id="temp-slider" type="range" min="0" max="200" value="50">
-        </div>
+        <!-- Temperature was here -->
+        <button onclick="generateDescription('original-image')" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
+          Generate Description
+        </button>
       </div>
-      <div class="w-full md:w-1/2 p-4 bg-gray-300 rounded-lg">
+      <!-- Grey box 2 -->
+      <div class="w-full p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">Description</h4>
         <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
           <!-- Description will be displayed here -->
           <span id="image-description"></span>
         </div>
-        <button onclick="copyToClipboard('image-description')" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-4" type="button">
+        <button onclick="copyToClipboard('image-description')" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
           Copy Text
         </button>
         
       </div>
     </div>
   </div>
-</div>
+<!-- </div> -->
 
 
-<div class="flex flex-col items-center justify-center p-4">
-  <div class="w-full max-w-4xl bg-gray-100 p-6 rounded-lg shadow-md">
-    <h3 class="text-2xl font-bold mb-4">Generate New Image</h3>
+<!-- <div class="flex flex-col md:flex-row items-center justify-center p-4"> -->
+  <!-- grey column 2 -->
+  <div class="w-full ml-4 max-w-2xl p-6 bg-gray-100 rounded-lg shadow-md">
+    <h3 class="text-2xl font-bold mb-4">Generate Image</h3>
 
     <div class="flex justify-between">
+      <!-- Old location for Use Description and Use Prompt buttons -->
       <div>
-        <button id="use-description-btn" onclick="getImage(this.id, document.getElementById('vivid-radio').checked)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 my-2 rounded focus:outline-none focus:shadow-outline">
-          Use Description
-        </button>
-        <button id="use-prompt-btn" onclick="getImage(this.id, document.getElementById('vivid-radio').checked)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 ml-3 my-2 rounded focus:outline-none focus:shadow-outline">
-          Use Prompt
-        </button>
+        
       </div>
       <div class="flex flex-col px-6">
         <label for="vivid-radio" class="radio-wrapper">
@@ -168,8 +176,9 @@
     <div class="py-4">
       <textarea id="prompt-input" name="image-prompt" cols="40" rows="3" placeholder="Enter Prompt" class="rounded-lg py-2 px-3 w-full" ></textarea>
     </div>
-    <div class="flex flex-col md:flex-row">
-      <div class="w-full md:w-1/2 p-4 bg-gray-300 rounded-lg mb-4 md:mb-0 md:mr-4">
+    <div class="flex flex-col">
+      <!-- Grey box 3 -->
+      <div class="w-full mb-6 mt-1 p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">New Image</h4>
         <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
           <span id="image-placeholder-message"></span>
@@ -179,21 +188,29 @@
           </a>
           </div>
         <div class="flex justify-between">
+          <button id="use-description-btn" onclick="getImage(this.id, document.getElementById('vivid-radio').checked)" class="bg-green-500 w-full mt-4 py-2 px-4 mr-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline">
+            Use Description
+          </button>
+          <button id="use-prompt-btn" onclick="getImage(this.id, document.getElementById('vivid-radio').checked)" class="bg-green-500 w-full mt-4 py-2 px-4 ml-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline">
+            Use Prompt
+          </button>
+
           <!-- <button onclick="downloadImage('generated-image')" id="download" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 mr-2 rounded focus:outline-none focus:shadow-outline w-full mt-4" type="button">
             Download
           </button> -->
-          <button onclick="copyImageURL('generated-image')" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-4" type="button">
+          <!-- <button onclick="copyImageURL('generated-image')" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
             Copy Temporary Link
-          </button>
+          </button> -->
         </div>
       </div>
-      <div class="w-full md:w-1/2 p-4 bg-gray-300 rounded-lg">
+      <!-- Grey box 4 -->
+      <div class="w-full p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">Revised Prompt</h4>
         <div class="h-64 bg-gray-400 rounded flex items-center justify-center text-white">
           <!-- Description will be displayed here -->
           <span id="revised-prompt"></span>
         </div>
-        <button onclick="copyToClipboard('revised-prompt')" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full mt-4" type="button">
+        <button onclick="copyToClipboard('revised-prompt')" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
           Copy Text
         </button>
       </div>  
