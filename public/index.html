@@ -118,11 +118,12 @@
         </div>
         <!-- Display Box 1 -->
         <div class="h-72 mt-4 bg-gray-400 rounded flex items-center justify-center text-white">
+          <span class="p-4" id="original-image-error-message" style="display: none">Upload image or enter an image URL to generate a description.</span>
           <!-- Original Image will be displayed here -->
-            <img id="original-image" src="" alt="Uploaded Image" class="max-w-full max-h-full" style="display: none;" />
+            <img id="original-image" alt="Uploaded Image" class="max-w-full max-h-full" style="display: none;" />
         </div>
         <!-- Green button -->
-        <button onclick="generateDescription('original-image')" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
+        <button id="gen-desc-btn" onclick="getImageDescription()" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-gray-400 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
           Generate Description
         </button>
       </div>
@@ -170,7 +171,7 @@
         </div>
         <!-- Display Box 3 -->
         <div class="h-72 bg-gray-400 rounded flex items-center justify-center text-white">
-          <span id="image-placeholder-message"></span>
+          <span id="new-image-placeholder-message"></span>
           <!-- Generated Image will be displayed here -->
           <a id="generated-image-link" href="" target="_blank" style="display: none;">
             <img id="generated-image" src="" alt="Generated Image" class="max-w-full max-h-full" style="display: none;" />
