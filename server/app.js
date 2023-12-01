@@ -32,7 +32,7 @@ app.post('/vision', async (req, res) => {
         "content": [
           {
             "type": "text", 
-            "text": "Describe what’s in this image. Inlcude style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the descrption always provide a style catorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic. When making this categorization always include single quotation marks around the word 'vivid' or 'natural'. Example 1: \"\"\"The image style is 'vidid'.\"\"\" Example 2: \"\"\"The image style is 'natural'.\"\"\"",
+            "text": "Describe what’s in this image. Include style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the description always provide a style categorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic. When making this categorization always include single quotation marks around the word 'vivid' or 'natural'. Example 1: \"\"\"The image style is 'vidid'.\"\"\" Example 2: \"\"\"The image style is 'natural'.\"\"\"",
           },
           {
             "type": "image_url",
