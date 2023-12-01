@@ -1,69 +1,83 @@
 // HANDLE CLIENT-SIDE ACTIONS
 
-// UPLOAD
-// handle images uploaded from local machine and generate description
+// ADD IMAGE FROM UPLOAD
 function loadImageFromFile(input) {
   if (input.files && input.files[0]) {
     var reader = new FileReader();
     reader.onload = async function (e) {
       const base64Image = e.target.result;
-
+      hideElement('original-image-error-message')
       displayImage('original-image', base64Image);
-
-      // Create placeholder text while description is being generated
-      updateTextElement('image-description', "generating description...");
-    
-      // Call server to generate image description
-      const imageURL = base64Image;
-      const temperature = Number(document.getElementById("temp-value").textContent);
-      const body = { imageURL, temperature };
-      const data = await generateImageDescription(body)
-      
-      // Update client with server response data
-      updateTextElement('image-description', data.description);
-      updateRadioForNaturalImages(data.description);
     };
     reader.readAsDataURL(input.files[0]);
   }
 }
 
-// URL
-// handle images uploaded from url and generate description
+// ADD IMAGE FROM URL INPUT
 async function loadImageFromUrl(imageURL) {
+  hideElement('original-image-error-message');
   displayImage('original-image', imageURL);
+}
 
+// GENERATE DESCRIPTION
+// handle description generation request from client
+async function getImageDescription() {
+  const imageURL = document.getElementById('original-image').src;
+  const temperature = Number(document.getElementById('temp-value').textContent);
+
+  // client-side error handling
+  if (!imageURL) {
+    displayElement('original-image-error-message');
+    return;
+  } 
+
+  // Clear input field
+  const input = document.getElementById('image-url');
+  input.value = '';
+  
   // Create placeholder text while description is being generated
-  updateTextElement('image-description', "generating description...");
+  updateTextElement('image-description-placeholder', "generating description...");
 
   // Call server to generate image description
-  const temperature = Number(document.getElementById("temp-value").textContent);
   const body = { imageURL, temperature };
   const data = await generateImageDescription(body)
   
   // Update client with server response data
+  updateTextElement('image-description-placeholder', ""); // without a distinct placeholder an image can be generated before the description
   updateTextElement('image-description', data.description);
   updateRadioForNaturalImages(data.description);
-}
+};
 
-// GENERATE IMAGE
+
+// GET IMAGE
 // handle image generation request from client
 async function getImage(id, isVivid) {
-  hideImage('generated-image');
+  hideElement('generated-image');
 
   // determine which prompt to use
   let prompt;
   if (id === 'use-description-btn') {
     prompt = document.getElementById('image-description').textContent;
+    if (!prompt) {
+      // client-side error handling
+      updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
+      return;
+    }
   } 
   if (id === 'use-prompt-btn') {
     prompt = document.getElementById('prompt-input').value;
+    if (!prompt) {
+      // client-side error handling
+      updateTextElement('new-image-placeholder-message', "You must generate enter a prompt first.");
+      return;
+    }
   };
 
   // determine which style to use
   const style = isVivid ? 'vivid' : 'natural';
   
   // show placeholder message
-  updateTextElement('image-placeholder-message', "generating image...");
+  updateTextElement('new-image-placeholder-message', "generating image...");
   // cleanup revised prompt
   updateTextElement('revised-prompt', "");
 
@@ -73,7 +87,7 @@ async function getImage(id, isVivid) {
 
   // hide the placeholder message once image is generated
   if (data) {
-    updateTextElement('image-placeholder-message', "");
+    updateTextElement('new-image-placeholder-message', "");
   };
   
   // Update client with server response data
@@ -97,13 +111,24 @@ slider.oninput = function() {
 
 
 // CLIENT-SIDE UTILITY FUNCTIONS
+function modifyElementClass(id, oldClass, newClass) {
+  const element = document.getElementById(id);
+  element.classList.remove(oldClass);
+  element.classList.add(newClass);
+}
+
 function displayImage(id, imageURL) {
   let image = document.getElementById(id);
   image.src = imageURL;
   image.style.display = 'block';
 }
 
-function hideImage(id) {
+function displayElement(id) {
+  let image = document.getElementById(id);
+  image.style.display = 'block';
+}
+
+function hideElement(id) {
   let image = document.getElementById(id);
   image.style.display = 'none';
 }
@@ -154,7 +179,7 @@ async function generateImageDescription(body) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Server Error:', error);
   }
 }
 
@@ -171,6 +196,6 @@ async function generateImage(body) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Server Error:', error);
   }
 }
