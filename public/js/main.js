@@ -35,6 +35,9 @@ async function getImageDescription() {
   const input = document.getElementById('image-url');
   input.value = '';
   
+  // Clear previous description
+  updateTextElement('image-description', "");
+  
   // Create placeholder text while description is being generated
   updateTextElement('image-description-placeholder', "generating description...");
 
