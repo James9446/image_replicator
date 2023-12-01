@@ -1,51 +1,22 @@
 // HANDLE CLIENT-SIDE ACTIONS
 
-// UPLOAD
-// handle images uploaded from local machine 
+// ADD IMAGE FROM UPLOAD
 function loadImageFromFile(input) {
   if (input.files && input.files[0]) {
     var reader = new FileReader();
     reader.onload = async function (e) {
       const base64Image = e.target.result;
-
+      hideElement('original-image-error-message')
       displayImage('original-image', base64Image);
-
-      // // Create placeholder text while description is being generated
-      // updateTextElement('image-description', "generating description...");
-    
-      // // Call server to generate image description
-      // const imageURL = base64Image;
-      // const temperature = Number(document.getElementById("temp-value").textContent);
-      // const body = { imageURL, temperature };
-      // const data = await generateImageDescription(body)
-      
-      // // Update client with server response data
-      // updateTextElement('image-description', data.description);
-      // updateRadioForNaturalImages(data.description);
     };
     reader.readAsDataURL(input.files[0]);
   }
 }
 
-// URL
-// handle images uploaded from url 
+// ADD IMAGE FROM URL INPUT
 async function loadImageFromUrl(imageURL) {
+  hideElement('original-image-error-message');
   displayImage('original-image', imageURL);
-  modifyElementClass('gen-desc-btn', 'hover:bg-gray-400', 'hover:bg-green-700');
-  // updateTextElement('original-image-placeholder-message', "");
-  hideImage('original-image-error-message')
-
-  // // Create placeholder text while description is being generated
-  // updateTextElement('image-description', "generating description...");
-
-  // // Call server to generate image description
-  // const temperature = Number(document.getElementById("temp-value").textContent);
-  // const body = { imageURL, temperature };
-  // const data = await generateImageDescription(body)
-  
-  // // Update client with server response data
-  // updateTextElement('image-description', data.description);
-  // updateRadioForNaturalImages(data.description);
 }
 
 // GENERATE DESCRIPTION
@@ -54,6 +25,7 @@ async function getImageDescription() {
   const imageURL = document.getElementById('original-image').src;
   const temperature = Number(document.getElementById('temp-value').textContent);
 
+  // client-side error handling
   if (!imageURL) {
     displayElement('original-image-error-message');
     return;
@@ -64,13 +36,14 @@ async function getImageDescription() {
   input.value = '';
   
   // Create placeholder text while description is being generated
-  updateTextElement('image-description', "generating description...");
+  updateTextElement('image-description-placeholder', "generating description...");
 
   // Call server to generate image description
   const body = { imageURL, temperature };
   const data = await generateImageDescription(body)
   
   // Update client with server response data
+  updateTextElement('image-description-placeholder', ""); // without a distinct placeholder an image can be generated before the description
   updateTextElement('image-description', data.description);
   updateRadioForNaturalImages(data.description);
 };
@@ -79,15 +52,25 @@ async function getImageDescription() {
 // GET IMAGE
 // handle image generation request from client
 async function getImage(id, isVivid) {
-  hideImage('generated-image');
+  hideElement('generated-image');
 
   // determine which prompt to use
   let prompt;
   if (id === 'use-description-btn') {
     prompt = document.getElementById('image-description').textContent;
+    if (!prompt) {
+      // client-side error handling
+      updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
+      return;
+    }
   } 
   if (id === 'use-prompt-btn') {
     prompt = document.getElementById('prompt-input').value;
+    if (!prompt) {
+      // client-side error handling
+      updateTextElement('new-image-placeholder-message', "You must generate enter a prompt first.");
+      return;
+    }
   };
 
   // determine which style to use
@@ -145,7 +128,7 @@ function displayElement(id) {
   image.style.display = 'block';
 }
 
-function hideImage(id) {
+function hideElement(id) {
   let image = document.getElementById(id);
   image.style.display = 'none';
 }
