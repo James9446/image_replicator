@@ -37,7 +37,7 @@ async function getImageDescription() {
   
   // Clear previous description
   updateTextElement('image-description', "");
-  
+
   // Create placeholder text while description is being generated
   updateTextElement('image-description-placeholder', "generating description...");
 
@@ -157,10 +157,13 @@ function copyImageURL(id) {
 };
 
 function updateRadioForNaturalImages(imageDescription) {
+  const vividRadio = document.getElementById('vivid-radio');
+  const naturalRadio = document.getElementById('natural-radio');
   const isNatural = imageDescription.includes("'natural'");
   if (isNatural) {
-    const naturalRadio = document.getElementById('natural-radio')
     naturalRadio.checked = true;
+  } else {
+    vividRadio.checked = true;
   }
 }
 
