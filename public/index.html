@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/images/image_replicator.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      #image-description, #revised-prompt {
+      #vision-output, #revised-prompt {
         overflow-y: auto; /* Enable vertical scrolling */
         padding: 10px; /* Add padding */
         margin: 5px; /* Add margin */
@@ -150,11 +150,11 @@
         <!-- Display Box 2 -->
         <div class="h-72 bg-gray-200 rounded flex items-center justify-center text-black">
           <!-- Description will be displayed here -->
-          <span class="p-4" id="image-description-placeholder"></span>
-          <span class="p-4" id="image-description"></span>
+          <span class="p-4" id="vision-output-placeholder"></span>
+          <span class="p-4" id="vision-output"></span>
         </div>
         <!-- Green button -->
-        <button onclick="copyToClipboard('image-description')" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
+        <button onclick="copyToClipboard('vision-output')" class="bg-green-500 w-full mt-4 py-2 px-4 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button">
           Copy Text
         </button>      
       </div>

@@ -63,18 +63,18 @@ async function getImageDescription() {
   } 
   
   // Clear previous description
-  updateTextElement('image-description', "");
+  updateTextElement('vision-output', "");
 
   // Create placeholder text while description is being generated
-  updateTextElement('image-description-placeholder', "generating description...");
+  updateTextElement('vision-output-placeholder', "generating description...");
 
   // Call server to generate image description
   const body = { imageURL, temperature };
   const data = await generateImageDescription(body)
   
   // Update client with server response data
-  updateTextElement('image-description-placeholder', ""); // without a distinct placeholder an image can be generated before the description
-  updateTextElement('image-description', data.description);
+  updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
+  updateTextElement('vision-output', data.description);
   updateRadioForNaturalImages(data.description);
 };
 
@@ -82,9 +82,7 @@ async function getImageDescription() {
 async function getImageComparson() {
   const orignalImageURL = document.getElementById('original-image').src;
   const generatedImageURL = document.getElementById('generated-image').src;
-
-  console.log("orignalImageURL: ", orignalImageURL, !!orignalImageURL);
-  console.log("generatedImageURL: ", generatedImageURL, !!generatedImageURL);
+  const temperature = Number(document.getElementById('temp-value').textContent);
 
   // client-side error handling
   if (!orignalImageURL && !generatedImageURL) {
@@ -92,13 +90,11 @@ async function getImageComparson() {
     displayElement('original-image-error-message');
     return;
   }
-
   if (!orignalImageURL) {
     updateTextElement('original-image-error-message', "You must have an original image to compare.");
     displayElement('original-image-error-message');
     return;
   }
-
   if (!generatedImageURL) {
     hideElement('original-image');
     updateTextElement('original-image-error-message', "Generate an image to compare.");
@@ -110,22 +106,23 @@ async function getImageComparson() {
     return;
   }
 
-
   // update box title
   updateTextElement('vision-output-title', "Comparison");
 
+  // Clear previous description
+  updateTextElement('vision-output', "");
+
   // Create placeholder text while description is being generated
-  updateTextElement('image-description', "generating comparison...");
+  updateTextElement('vision-output-placeholder', "generating description...");
 
-
-  // // Call server to generate image description
-  // const body = { orignalImageURL, generatedImageURL, temperature };
-  // const data = await generateImageComparison(body)
+  // Call server to generate image description
+  const body = { orignalImageURL, generatedImageURL, temperature };
+  const data = await generateImageComparison(body)
   
-  // // Update client with server response data
-  // updateTextElement('image-description-placeholder', ""); // without a distinct placeholder an image can be generated before the description
-  // updateTextElement('image-description', data.description);
-  // updateRadioForNaturalImages(data.description);
+  // Update client with server response data
+  updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
+  updateTextElement('vision-output', data.comparison);
+  updateRadioForNaturalImages(data.comparison);
 
 }
 
@@ -139,7 +136,7 @@ async function getImage(id, isVivid) {
   // determine which prompt to use
   let prompt;
   if (id === 'use-description-btn') {
-    prompt = document.getElementById('image-description').textContent;
+    prompt = document.getElementById('vision-output').textContent;
     if (!prompt) {
       // client-side error handling
       updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
