@@ -1,13 +1,38 @@
 // HANDLE CLIENT-SIDE ACTIONS
 
+// GET A RANDOM IMAGE 
+async function getRandomImage() {
+  // https://unsplash.com/documentation#get-a-random-photo
+  // to limit result to square images, add the parameter orientation=squarish to the request url
+
+  try {
+    const response = await fetch('https://api.unsplash.com/photos/random?client_id=A5OLU2o5jboQIVT3EPJnvPiiUPtGlAwhnyKCkYujeXE', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const data = await response.json();
+    const randomImageURL = data.urls.raw;
+    loadImageFromUrl(randomImageURL);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 // ADD IMAGE FROM UPLOAD
 function loadImageFromFile(input) {
+  hideElement('original-image-error-message')
+  removeImageLink('original-image-link')
+  displayElement('original-image-link', 'contents');
   if (input.files && input.files[0]) {
     var reader = new FileReader();
     reader.onload = async function (e) {
       const base64Image = e.target.result;
-      hideElement('original-image-error-message')
+      
       displayImage('original-image', base64Image);
+      // modifyElementClass('original-image-link', 'enabled', 'disabled');
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -17,50 +42,101 @@ function loadImageFromFile(input) {
 async function loadImageFromUrl(imageURL) {
   hideElement('original-image-error-message');
   displayImage('original-image', imageURL);
+  createImageLink('original-image-link', imageURL);
+  clearInputField('image-url');
 }
 
-// GENERATE DESCRIPTION
+// GET DESCRIPTION
 // handle description generation request from client
 async function getImageDescription() {
   const imageURL = document.getElementById('original-image').src;
   const temperature = Number(document.getElementById('temp-value').textContent);
 
+  // update vision output title
+  updateTextElement('vision-output-title', "Description"); // it defaults to the title Description
+
   // client-side error handling
   if (!imageURL) {
+    updateTextElement('original-image-error-message', "You must provide an image before a description can be generated.");
     displayElement('original-image-error-message');
     return;
   } 
-
-  // Clear input field
-  const input = document.getElementById('image-url');
-  input.value = '';
   
   // Clear previous description
-  updateTextElement('image-description', "");
+  updateTextElement('vision-output', "");
 
   // Create placeholder text while description is being generated
-  updateTextElement('image-description-placeholder', "generating description...");
+  updateTextElement('vision-output-placeholder', "generating description...");
 
   // Call server to generate image description
   const body = { imageURL, temperature };
   const data = await generateImageDescription(body)
   
   // Update client with server response data
-  updateTextElement('image-description-placeholder', ""); // without a distinct placeholder an image can be generated before the description
-  updateTextElement('image-description', data.description);
+  updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
+  updateTextElement('vision-output', data.description);
   updateRadioForNaturalImages(data.description);
 };
+
+// GET IMAGE COMPARISON
+async function getImageComparson() {
+  const orignalImageURL = document.getElementById('original-image').src;
+  const generatedImageURL = document.getElementById('generated-image').src;
+  const temperature = Number(document.getElementById('temp-value').textContent);
+
+  // client-side error handling
+  if (!orignalImageURL && !generatedImageURL) {
+    updateTextElement('original-image-error-message', "You must have an original image and a generated image to compare.");
+    displayElement('original-image-error-message');
+    return;
+  }
+  if (!orignalImageURL) {
+    updateTextElement('original-image-error-message', "You must have an original image to compare.");
+    displayElement('original-image-error-message');
+    return;
+  }
+  if (!generatedImageURL) {
+    hideElement('original-image');
+    updateTextElement('original-image-error-message', "Generate an image to compare.");
+    displayElement('original-image-error-message');
+    setTimeout(() => {
+      hideElement('original-image-error-message');
+      displayImage('original-image', orignalImageURL);
+    }, 2000);
+    return;
+  }
+
+  // update box title
+  updateTextElement('vision-output-title', "Comparison");
+
+  // Clear previous description
+  updateTextElement('vision-output', "");
+
+  // Create placeholder text while description is being generated
+  updateTextElement('vision-output-placeholder', "generating description...");
+
+  // Call server to generate image description
+  const body = { orignalImageURL, generatedImageURL, temperature };
+  const data = await generateImageComparison(body)
+  
+  // Update client with server response data
+  updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
+  updateTextElement('vision-output', data.comparison);
+  updateRadioForNaturalImages(data.comparison);
+
+}
 
 
 // GET IMAGE
 // handle image generation request from client
 async function getImage(id, isVivid) {
+  // clear previous image
   hideElement('generated-image');
 
   // determine which prompt to use
   let prompt;
   if (id === 'use-description-btn') {
-    prompt = document.getElementById('image-description').textContent;
+    prompt = document.getElementById('vision-output').textContent;
     if (!prompt) {
       // client-side error handling
       updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
@@ -82,6 +158,7 @@ async function getImage(id, isVivid) {
   // show placeholder message
   displayElement('new-image-placeholder-message');
   updateTextElement('new-image-placeholder-message', "generating image...");
+
   // cleanup revised prompt
   updateTextElement('revised-prompt', "");
 
@@ -103,24 +180,6 @@ async function getImage(id, isVivid) {
   updateTextElement('revised-prompt', revisedPrompt);
 }
 
-// GET A RANDOM IMAGE 
-async function getRandomImage() {
-  // to limit result to square images, add the parameter orientation=squarish to the request url
-  try {
-    const response = await fetch('https://api.unsplash.com/photos/random?client_id=A5OLU2o5jboQIVT3EPJnvPiiUPtGlAwhnyKCkYujeXE', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-
-    const data = await response.json();
-    const randomImageURL = data.urls.raw;
-    loadImageFromUrl(randomImageURL);
-  } catch (error) {
-    console.error('Server Error:', error);
-  }
-}
 
 // TEMPERATURE SLIDER
 const slider = document.getElementById("temp-slider");
@@ -143,13 +202,14 @@ function modifyElementClass(id, oldClass, newClass) {
 
 function displayImage(id, imageURL) {
   let image = document.getElementById(id);
+  image.src = '';
   image.src = imageURL;
   image.style.display = 'block';
 }
 
-function displayElement(id) {
+function displayElement(id, style='block') {
   let image = document.getElementById(id);
-  image.style.display = 'block';
+  image.style.display = style;
 }
 
 function hideElement(id) {
@@ -157,10 +217,22 @@ function hideElement(id) {
   image.style.display = 'none';
 }
 
+function clearInputField(id) {
+  const input = document.getElementById(id);
+  input.value = '';
+};
+
 function createImageLink(id, imageURL) {
   let link = document.getElementById(id);
   link.style.display = 'contents';
   link.href = imageURL;
+  link.target = '_blank';
+};
+
+function removeImageLink(id) {
+  let link = document.getElementById(id);
+  link.href = 'javascript:void(0)';
+  link.target = '';
 };
 
 function updateTextElement(id, text) {
@@ -213,6 +285,23 @@ async function generateImageDescription(body) {
 async function generateImage(body) {
   try {
     const response = await fetch('/dall-e', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Server Error:', error);
+  }
+}
+
+async function generateImageComparison(body) {
+  try {
+    const response = await fetch('/vision-comparison', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

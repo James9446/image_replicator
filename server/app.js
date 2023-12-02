@@ -32,7 +32,7 @@ app.post('/vision', async (req, res) => {
         "content": [
           {
             "type": "text", 
-            "text": "Describe what’s in this image. Include style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the description always provide a style categorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic. When making this categorization always include single quotation marks around the word 'vivid' or 'natural'. Example 1: \"\"\"The image style is 'vidid'.\"\"\" Example 2: \"\"\"The image style is 'natural'.\"\"\"",
+            "text": "Describe what’s in this image. Include style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the description always provide a style categorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic. When making this categorization always include single quotation marks around the word 'vivid' or 'natural'. Example 1: \"\"\"The image style is 'vivid'.\"\"\" Example 2: \"\"\"The image style is 'natural'.\"\"\"",
           },
           {
             "type": "image_url",
@@ -59,6 +59,65 @@ app.post('/vision', async (req, res) => {
 
     // Handle the API response as needed
     res.status(200).json({description});
+  } catch (error) {
+    // Handle errors if the API request fails
+    if (error.response) {
+      console.log(error.response.status);
+      console.log(error.response.data);
+      res.status(error.response.status).json({ error: error.response.data });
+    } else {
+        console.log(error.message);
+        res.status(500).json({ error: error.message });
+    }
+  }
+});
+
+// Generate an image comparosin
+app.post('/vision-comparison', async (req, res) => {
+  const { orignalImageURL, generatedImageURL, temperature } = req.body;
+  const key = process.env.OPEN_API_KEY;
+  const completionsURL = 'https://api.openai.com/v1/chat/completions'; 
+  const visionBody = {
+      "model": "gpt-4-vision-preview",
+      "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text", 
+            "text": "What are in these images? How are they similar? How do they differ?",
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": orignalImageURL
+            }
+          },
+          {
+            "type": "image_url",
+            "image_url": {
+              "url": generatedImageURL
+            }
+          }
+        ]
+      }
+    ],
+    "max_tokens": 500,
+    "temperature": temperature,
+  }
+  try {
+    // Make a POST request to the API endpoint
+    const apiResponse = await axios.post(completionsURL, visionBody, {
+      headers: {
+        'Authorization': `Bearer ${key}`, 
+        'Content-Type': 'application/json' 
+      }
+    });
+
+    const comparison = await apiResponse.data.choices[0].message.content;
+
+    // Handle the API response as needed
+    res.status(200).json({comparison});
   } catch (error) {
     // Handle errors if the API request fails
     if (error.response) {
