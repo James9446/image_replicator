@@ -84,7 +84,7 @@ async function getImage(id, isVivid) {
   // cleanup revised prompt
   updateTextElement('revised-prompt', "");
 
-  // Call server to generate image
+  // call server to generate image
   const body = { prompt, style };
   const data = await generateImage(body);
 
@@ -93,12 +93,31 @@ async function getImage(id, isVivid) {
     updateTextElement('new-image-placeholder-message', "");
   };
   
-  // Update client with server response data
+  // update client with server response data
   const imageURL = data.imageData.url;
   const revisedPrompt = data.imageData.revised_prompt;
   displayImage('generated-image', imageURL);
   createImageLink('generated-image-link', imageURL);
   updateTextElement('revised-prompt', revisedPrompt);
+}
+
+// GET A RANDOM IMAGE 
+async function getRandomImage() {
+  // to limit result to square images, add the parameter orientation=squarish to the request url
+  try {
+    const response = await fetch('https://api.unsplash.com/photos/random?client_id=A5OLU2o5jboQIVT3EPJnvPiiUPtGlAwhnyKCkYujeXE', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    const data = await response.json();
+    const randomImageURL = data.urls.raw;
+    loadImageFromUrl(randomImageURL);
+  } catch (error) {
+    console.error('Server Error:', error);
+  }
 }
 
 // TEMPERATURE SLIDER
