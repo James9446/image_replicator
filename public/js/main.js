@@ -80,6 +80,7 @@ async function getImage(id, isVivid) {
   const style = isVivid ? 'vivid' : 'natural';
   
   // show placeholder message
+  displayElement('new-image-placeholder-message');
   updateTextElement('new-image-placeholder-message', "generating image...");
   // cleanup revised prompt
   updateTextElement('revised-prompt', "");
@@ -91,6 +92,7 @@ async function getImage(id, isVivid) {
   // hide the placeholder message once image is generated
   if (data) {
     updateTextElement('new-image-placeholder-message', "");
+    hideElement('new-image-placeholder-message');
   };
   
   // update client with server response data
