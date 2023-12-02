@@ -76,40 +76,53 @@
           </a>
         </h1>
         <nav class="md:ml-auto flex flex-wrap items-center text-base justify-center">
-          <a href="how-to.html" class="mr-5 hover:text-gray-900">How to use this site?</a>
+          <!-- <a href="how-to.html" class="mr-5 hover:text-gray-900">How to use this site?</a> -->
           <a href="about.html" class="mr-5 hover:text-gray-900">About</a>
         </nav>
       </div>
     </header>
 
     <div class="flex flex-col items-center justify-center p-4">
-      <div class="w-full max-w-4xl bg-gray-100 p-6 rounded-lg shadow-md">
+      <div class="w-full max-w-4xl border-1 p-6 rounded-lg shadow-xl">
         <h3 class="text-2xl font-bold mb-4">About Image Replicator</h3>
         <p>Image Replicator is a web application powered by OpenAI’s GPT-4V(ision) and DALL-E-3 AI models that generates a detailed description of an uploaded image and generates a new image based on that description or a given prompt.</p>
 
-        <h4 class="text-xl font-bold mt-4">OpenAI APIs</h4>
+        <h4 class="text-xl font-bold mt-4">APIs</h4>
         <ul class="list-disc list-inside ml-5">
           <li><b><a href="https://platform.openai.com/docs/guides/vision" target="_blank">GPT-4V(ision):</a></b> Generates an image description</li>
           <li><a href="https://platform.openai.com/docs/guides/images/example-dall-e-3-generations?context=node" target="_blank"><b>DALL-E-3:</b></a> Generates a new image based on that description</li>
         </ul>
 
+        
+        <!-- <h4 class="text-xl font-bold mt-4">How the website works</h4> -->
+        <h4 class="text-xl font-bold mt-4">GPT-4V(ision)</h4>
+        <p class="mb-3">OpenAI's GPT-4V(ision) model generates a detailed description by analyzing the provided image. The prompt used to generate the image description is currently hard coded.</p>
+        <p class="pl-10 pr-10"><b>Prompt:</b></p>
+        <p class="mb-3 p-2 ml-10 mr-10 bg-gray-200 rounded-lg">Describe what’s in this image. Include style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the description always provide a style categorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic. When making this categorization always include single quotation marks around the word 'vivid' or 'natural'. Example 1: """The image style is 'vidid'.""" Example 2: """The image style is 'natural'."""</p>
+        
+        <h4 class="text-xl font-bold mt-4">DALL-E 3</h4>
+        <p class="mb-3">OpenAI's DALL-E 3 model generates an image based on either the description generated or a custom prompt provided in the text field.</p>
+        
+        <h5 class="text-l font-bold mt-4">Revised Prompt</h5>
+        <p>DALL-E 3 will revise the prompt before generating an image. This is largely for safety reasons but can also serve to add more detail. This featue cannot be dissabled but the extent of the revision can be limitted via prompting.</p>
+        
+        <h5 class="text-l font-bold mt-4">Limitting Revisions</h5>
+        <p class="mb-2">To limit the prompt revisions that DALL-E 3 applies, add the following to the line to the prompt:</p>
+        <code class="text-l p-1 bg-gray-200 border-1 border-black rounded-md">I NEED to test how the tool works with extremely simple prompts. DO NOT add any detail, just use it AS-IS:</code>
+        <p class="mt-2">Note: the degree to which prompts will be revised is not always consistent. Even when attempting to limit it through prompting.</p>
+        
+        <h5 class="text-l font-bold mt-4">Style</h5>
+        <p>The DALL-E-3 model also accepts a style parameter of either "vivid" or "natural". The vivid style directs the model to create hyper-real and dramatic images. Conversely, the natural style guides the model to generate images with a more realistic appearance. The default prompt for generating an image description asks GPT-4V(ision) to categorize which style the image falls into. This categorization will be reflected in the style configuraion option in the UI, thus the image generated should have the same style as the original image. This can be overwritten by simply toggling the style setting in the UI.</p>
+ 
         <h4 class="text-xl font-bold mt-4">Features</h4>
         <ul class="list-disc list-inside ml-5">
           <li>Upload image or provide image URL to generate a detailed description of the image.</li>
           <li>Generate a new image based on the description or a provide a custom prompt.</li>
-          <li>When generating an image you can opt for the generated image to be in a "vivid" or "natural" style.</li>
-          <li>Copy to clipboard: the description text; the revised prompt text; a temporary link to the generated image.</li>
+          <li>When generating an image you can opt for the image to be created in a "vivid" or "natural" style.</li>
+          <li>Copy the image description or the revised prompt, to use it in a creating a custom prompt for DALL-E 3.</li>
           <li>Click on the generated image to open it in a new tab.</li>
         </ul>
 
-        <h4 class="text-xl font-bold mt-4">How the website works</h4>
-        <h5 class="text-l font-bold mt-2">Generate Image Description</h5>
-        <p class="mb-3">OpenAI's GPT-4V(ision) model generates a detailed description by analyzing the provided image. The prompt used to generate the image description is currently hard coded.</p>
-        <p class="mb-3 pl-10 pr-10"><b>Prompt:</b> Describe what’s in this image. Include style, composition, colors, shapes, textures, lighting, and any other details that would help someone fully understand all of the details of the image. At the end of the description always provide a style categorization where the image is categorized as either 'vivid' or 'natural'. 'vivid' means the image looks hyper-real and dramatic, emphasizing intense and vibrant visuals. 'natural' means the image has a more realistic appearance, that steers away from hyper-realism and has a natural, authentic aesthetic. When making this categorization always include single quotation marks around the word 'vivid' or 'natural'. Example 1: """The image style is 'vidid'.""" Example 2: """The image style is 'natural'."""</p>
-
-        <h5 class="text-l font-bold mt-4">Generate Image</h5>
-        <p class="mb-3">OpenAI's DALL-E 3 model generates an image based on either the description generated or a custom prompt. Either way the prompt will be revised before the image is generated. This is largely for safety reasons but can also serve to add more detail. The revised prompt is dsiplayed to the user. The DALL-E-3 model also accepts a style parameter of either "vivid" or "natural". The vivid style directs the model to create hyper-real and dramatic images. Conversely, the natural style guides the model to generate images with a more realistic appearance. The default prompt for description generation asks for an assessment of which style the image falls into and adjusts the style parameter accordingly. This will be reflected in the style configuraion option in the UI, but the perferred style can be manually set as well.</p>
-  
         <h4 class="text-xl font-bold mt-4">Created By:</h4>
         <p>James Reynolds</p>  
         <a class="flex mr-2" href="https://github.com/James9446/image_replicator" target="_blank">GitHub Repo</a>
