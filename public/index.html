@@ -90,7 +90,7 @@
 
 <div class="flex flex-col p-4 md:flex-row justify-center">
   <!-- grey column 1 -->
-  <div class="w-full md:mx-4 max-w-2xl bg-gray-100 p-6 rounded-lg shadow-md">
+  <div class="w-full md:mx-4 max-w-2xl p-6 bg-gray-100 rounded-lg shadow-md">
     <h3 class="text-2xl font-bold mb-4">Generate Description of Image</h3>
     
     <!-- Image upload options -->
@@ -126,7 +126,7 @@
           </div>
         </div>
         <!-- Display Box 1 -->
-        <div class="h-72 mt-4 bg-gray-400 rounded flex items-center justify-center text-white">
+        <div class="h-72 mt-4 bg-gray-200 rounded flex items-center justify-center text-black">
           <span class="p-4" id="original-image-error-message" style="display: none">Upload image or enter an image URL to generate a description.</span>
           <!-- Original Image will be displayed here -->
             <img id="original-image" alt="Uploaded Image" class="max-w-full max-h-full" style="display: none;" />
@@ -141,7 +141,7 @@
       <div class="w-full p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">Description</h4>
         <!-- Display Box 2 -->
-        <div class="h-72 bg-gray-400 rounded flex items-center justify-center text-white">
+        <div class="h-72 bg-gray-200 rounded flex items-center justify-center text-black">
           <!-- Description will be displayed here -->
           <span id="image-description-placeholder"></span>
           <span id="image-description"></span>
@@ -156,11 +156,11 @@
 
 
   <!-- grey column 2 -->
-  <div class="w-full md:mx-4 max-md:mt-6 max-w-2xl p-6 bg-gray-100 rounded-lg shadow-md">
+  <div class="w-full md:mx-4 max-md:mt-6 max-w-2xl bg-gray-100 p-6 border-blacl-100 border-1 rounded-lg shadow-md">
     <h3 class="text-2xl font-bold mb-2">Generate Image</h3>
     <!-- Prompt input -->
     <div class="py-2">
-      <textarea id="prompt-input" class="rounded-lg py-2 px-3 w-full" name="image-prompt" cols="40" rows="1" placeholder="Enter Prompt" ></textarea>
+      <textarea id="prompt-input" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="image-prompt" cols="40" rows="1" placeholder="Enter Prompt" ></textarea>
     </div>
     <div class="flex flex-col mt-2">
       <!-- Grey box 3 -->
@@ -180,7 +180,7 @@
           </div>
         </div>
         <!-- Display Box 3 -->
-        <div class="h-72 bg-gray-400 rounded flex items-center justify-center text-white">
+        <div class="h-72 bg-gray-200 rounded flex items-center justify-center text-black">
           <span class="p-4" id="new-image-placeholder-message"></span>
           <!-- Generated Image will be displayed here -->
           <a id="generated-image-link" class="max-w-full max-h-full" href="" target="_blank" style="display: none;">
@@ -205,7 +205,7 @@
       <div class="w-full p-4 bg-gray-300 rounded-lg">
         <h4 class="text-xl font-bold mb-4">Revised Prompt</h4>
         <!-- Display Box 4 -->
-        <div class="h-72 bg-gray-400 rounded flex items-center justify-center text-white">
+        <div class="h-72 bg-gray-200 rounded flex items-center justify-center text-black">
           <!-- Description will be displayed here -->
           <span id="revised-prompt"></span>
         </div>
