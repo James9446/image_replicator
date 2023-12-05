@@ -113,7 +113,7 @@ async function getImageComparson() {
   updateTextElement('vision-output', "");
 
   // Create placeholder text while description is being generated
-  updateTextElement('vision-output-placeholder', "generating description...");
+  updateTextElement('vision-output-placeholder', "generating comparison...");
 
   // Call server to generate image description
   const body = { orignalImageURL, generatedImageURL, temperature };
