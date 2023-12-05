@@ -16,6 +16,11 @@ async function getRandomImage() {
     const data = await response.json();
     const randomImageURL = data.urls.raw;
     loadImageFromUrl(randomImageURL);
+
+    // Google Analytics Custom Event
+    gtag('event', 'random_seed_image_created', {
+      'image_url': randomImageURL
+    });
   } catch (error) {
     console.error(error);
   }
@@ -33,6 +38,11 @@ function loadImageFromFile(input) {
       
       displayImage('original-image', base64Image);
       // modifyElementClass('original-image-link', 'enabled', 'disabled');
+
+      // Google Analytics Custom Event
+      gtag('event', 'image_loaded_from_file', {
+        'image_url': base64Image
+      });
     };
     reader.readAsDataURL(input.files[0]);
   }
@@ -44,6 +54,11 @@ async function loadImageFromUrl(imageURL) {
   displayImage('original-image', imageURL);
   createImageLink('original-image-link', imageURL);
   clearInputField('image-url');
+
+  // Google Analytics Custom Event
+  gtag('event', 'image_loaded_from_url', {
+    'image_url': imageURL
+  });
 }
 
 // GET DESCRIPTION
@@ -59,6 +74,11 @@ async function getImageDescription() {
   if (!imageURL) {
     updateTextElement('original-image-error-message', "You must provide an image before a description can be generated.");
     displayElement('original-image-error-message');
+
+    // Google Analytics Custom Event
+    gtag('event', 'user_error', {
+      'error_message': 'You must provide an image before a description can be generated.'
+    });
     return;
   } 
   
@@ -76,6 +96,13 @@ async function getImageDescription() {
   updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
   updateTextElement('vision-output', data.description);
   updateRadioForNaturalImages(data.description);
+  
+  // Google Analytics Custom Event
+  gtag('event', 'description_generated', {
+    'description': data.description,
+    'image_url': imageURL,
+    'temperature': temperature
+  });
 };
 
 // GET IMAGE COMPARISON
@@ -88,11 +115,21 @@ async function getImageComparson() {
   if (!orignalImageURL && !generatedImageURL) {
     updateTextElement('original-image-error-message', "You must have an original image and a generated image to compare.");
     displayElement('original-image-error-message');
+
+    // Google Analytics Custom Event
+    gtag('event', 'user_error', {
+      'error_message': 'You must have an original image and a generated image to compare.'
+    });
     return;
   }
   if (!orignalImageURL) {
     updateTextElement('original-image-error-message', "You must have an original image to compare.");
     displayElement('original-image-error-message');
+
+    // Google Analytics Custom Event
+    gtag('event', 'user_error', {
+      'error_message': 'You must have an original image to compare.'
+    });
     return;
   }
   if (!generatedImageURL) {
@@ -103,6 +140,11 @@ async function getImageComparson() {
       hideElement('original-image-error-message');
       displayImage('original-image', orignalImageURL);
     }, 2000);
+
+    // Google Analytics Custom Event
+    gtag('event', 'user_error', {
+      'error_message': 'Generate an image to compare.'
+    });
     return;
   }
 
@@ -124,6 +166,13 @@ async function getImageComparson() {
   updateTextElement('vision-output', data.comparison);
   updateRadioForNaturalImages(data.comparison);
 
+  // Google Analytics Custom Event
+  gtag('event', 'comparison_generated', {
+    'comparison': data.comparison,
+    'original_image_url': orignalImageURL,
+    'generated_image_url': generatedImageURL,
+    'temperature': temperature
+  });
 }
 
 
@@ -140,6 +189,11 @@ async function getImage(id, isVivid) {
     if (!prompt) {
       // client-side error handling
       updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
+
+      // Google Analytics Custom Event
+      gtag('event', 'user_error', {
+        'error_message': 'You must generate an image description first.'
+      });
       return;
     }
   } 
@@ -148,6 +202,11 @@ async function getImage(id, isVivid) {
     if (!prompt) {
       // client-side error handling
       updateTextElement('new-image-placeholder-message', "You must generate enter a prompt first.");
+
+      // Google Analytics Custom Event
+      gtag('event', 'user_error', {
+        'error_message': 'You must enter a prompt first.'
+      });
       return;
     }
   };
@@ -178,6 +237,15 @@ async function getImage(id, isVivid) {
   displayImage('generated-image', imageURL);
   createImageLink('generated-image-link', imageURL);
   updateTextElement('revised-prompt', revisedPrompt);
+
+  // Google Analytics Custom Event
+  gtag('event', 'image_generated', {
+    'image_url': imageURL,
+    'prompt': prompt,
+    'prompt_type': id === 'use-description-btn' ? 'description' : 'prompt',
+    'style': style,
+    'revised_prompt': revisedPrompt
+  });
 }
 
 
@@ -242,6 +310,11 @@ function updateTextElement(id, text) {
 function copyToClipboard(id) {
   const text = document.getElementById(id).textContent;
   navigator.clipboard.writeText(text);
+
+  // Google Analytics Custom Event
+  gtag('event', 'text_copied', {
+    'text': text
+  });
 };
 
 function copyImageURL(id) {
