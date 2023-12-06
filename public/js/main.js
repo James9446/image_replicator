@@ -88,7 +88,6 @@ async function getImageDescription() {
 
   // error handling - user error: check if generation is in progress
   if (placeholderMessage === "Generating description..." || placeholderMessage === "Generating comparison..." || placeholderMessage === "Already in progress...") {
-    console.log(placeholderMessage);
     placeholderMessage = placeholderMessage === "Already in progress..." ? "Generating description..." : placeholderMessage; // placeholderMessage could be "Generating comparison..." and we want to keep that
     updateTextElement('vision-output-placeholder', "Already in progress...");
     displayElement('vision-output-placeholder');
@@ -190,7 +189,6 @@ async function getImageComparson() {
   // error handling - user error: check if generation is in progress
   if (placeholderMessage === "Generating comparison..." || placeholderMessage === "Generating description..." || placeholderMessage === "Already in progress...") {
     placeholderMessage = placeholderMessage === "Already in progress..." ? "Generating comparison..." : placeholderMessage; // placeholderMessage could be "Generating description..." and we want to keep that
-    console.log(placeholderMessage);
     updateTextElement('vision-output-placeholder', "Already in progress...");
     displayElement('vision-output-placeholder');
     setTimeout(() => {
