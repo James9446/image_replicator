@@ -168,6 +168,18 @@ app.post('/dall-e', async (req, res) => {
   }
 });
 
+app.post('/error-test', (req, res) => {
+  console.log(req.body);
+  try {
+    throw new Error('This is a test error');
+    // const description = 'Test message';
+    // res.status(200).json({description});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+})
+
 app.listen(port, () => {
   const start = Date(Date.now());
   console.log(`Server start time: ${start}`)

@@ -14,15 +14,22 @@ async function getRandomImage() {
     });
 
     const data = await response.json();
+
+    // handle errors
+    if (data.error || !data.urls.raw) {
+      throw new Error(data.error || "Unknown error");
+    }
+
     const randomImageURL = data.urls.raw;
     loadImageFromUrl(randomImageURL);
 
-    // Google Analytics Custom Event
+    // google analytics custom event
     gtag('event', 'random_seed_image_created', {
       'image_url': randomImageURL
     });
   } catch (error) {
     console.error(error);
+    updateTextElement('original-image-error-message', "Sorry, there was an error retrieving a random image. Please try again.");
   }
 }
 
@@ -37,9 +44,8 @@ function loadImageFromFile(input) {
       const base64Image = e.target.result;
       
       displayImage('original-image', base64Image);
-      // modifyElementClass('original-image-link', 'enabled', 'disabled');
 
-      // Google Analytics Custom Event
+      // google analytics custom event
       gtag('event', 'image_loaded_from_file', {
         'image_url': base64Image
       });
@@ -55,7 +61,7 @@ async function loadImageFromUrl(imageURL) {
   createImageLink('original-image-link', imageURL);
   clearInputField('image-url');
 
-  // Google Analytics Custom Event
+  // google analytics custom event
   gtag('event', 'image_loaded_from_url', {
     'image_url': imageURL
   });
@@ -66,43 +72,72 @@ async function loadImageFromUrl(imageURL) {
 async function getImageDescription() {
   const imageURL = document.getElementById('original-image').src;
   const temperature = Number(document.getElementById('temp-value').textContent);
-
-  // update vision output title
-  updateTextElement('vision-output-title', "Description"); // it defaults to the title Description
-
-  // client-side error handling
+  let placeholderMessage = document.getElementById('vision-output-placeholder').textContent;
+  
+  // error handling - user error: check if there is no image
   if (!imageURL) {
     updateTextElement('original-image-error-message', "You must provide an image before a description can be generated.");
     displayElement('original-image-error-message');
-
-    // Google Analytics Custom Event
+    
+    // google analytics custom event
     gtag('event', 'user_error', {
       'error_message': 'You must provide an image before a description can be generated.'
     });
     return;
   } 
+
+  // error handling - user error: check if generation is in progress
+  if (placeholderMessage === "Generating description..." || placeholderMessage === "Generating comparison..." || placeholderMessage === "Already in progress...") {
+    console.log(placeholderMessage);
+    placeholderMessage = placeholderMessage === "Already in progress..." ? "Generating description..." : placeholderMessage; // placeholderMessage could be "Generating comparison..." and we want to keep that
+    updateTextElement('vision-output-placeholder', "Already in progress...");
+    displayElement('vision-output-placeholder');
+    setTimeout(() => {
+      updateTextElement('vision-output-placeholder', placeholderMessage);
+    }, 1000);
+    return;
+  }
+
+  // update vision output title
+  updateTextElement('vision-output-title', "Description"); // it defaults to the title Description
   
   // Clear previous description
   updateTextElement('vision-output', "");
 
   // Create placeholder text while description is being generated
-  updateTextElement('vision-output-placeholder', "generating description...");
+  updateTextElement('vision-output-placeholder', "Generating description...");
+  displayElement('vision-output-placeholder');
 
-  // Call server to generate image description
-  const body = { imageURL, temperature };
-  const data = await generateImageDescription(body)
   
-  // Update client with server response data
-  updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
-  updateTextElement('vision-output', data.description);
-  updateRadioForNaturalImages(data.description);
-  
-  // Google Analytics Custom Event
-  gtag('event', 'description_generated', {
-    'description': data.description,
-    'image_url': imageURL,
-    'temperature': temperature
-  });
+  try {
+    // call server to generate image description
+    const body = { imageURL, temperature };
+    const data = await generateImageDescription(body)
+    
+    // test error handling
+    // const data = await errorTest(body);
+
+    // error handling
+    if (data.error || !data.description) {
+      throw new Error(data.error || "Unknown error");
+    }
+
+    // Update client with server response data
+    updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
+    hideElement('vision-output-placeholder');
+    updateTextElement('vision-output', data.description);
+    updateRadioForNaturalImages(data.description);
+
+    // google analytics custom event
+    gtag('event', 'description_generated', {
+      'description': data.description,
+      'image_url': imageURL,
+      'temperature': temperature
+    });
+  } catch (error) {
+    console.error(error);
+    updateTextElement('vision-output-placeholder', "Sorry, there was an error generating the description. Please try again.");
+  }
 };
 
 // GET IMAGE COMPARISON
@@ -110,28 +145,32 @@ async function getImageComparson() {
   const orignalImageURL = document.getElementById('original-image').src;
   const generatedImageURL = document.getElementById('generated-image').src;
   const temperature = Number(document.getElementById('temp-value').textContent);
+  let placeholderMessage = document.getElementById('vision-output-placeholder').textContent;
 
-  // client-side error handling
+  
+  // error handling - user error
   if (!orignalImageURL && !generatedImageURL) {
     updateTextElement('original-image-error-message', "You must have an original image and a generated image to compare.");
     displayElement('original-image-error-message');
-
-    // Google Analytics Custom Event
+    
+    // google analytics custom event
     gtag('event', 'user_error', {
       'error_message': 'You must have an original image and a generated image to compare.'
     });
     return;
   }
+  // error handling - user error
   if (!orignalImageURL) {
     updateTextElement('original-image-error-message', "You must have an original image to compare.");
     displayElement('original-image-error-message');
-
-    // Google Analytics Custom Event
+    
+    // google analytics custom event
     gtag('event', 'user_error', {
       'error_message': 'You must have an original image to compare.'
     });
     return;
   }
+  // error handling - user error
   if (!generatedImageURL) {
     hideElement('original-image');
     updateTextElement('original-image-error-message', "Generate an image to compare.");
@@ -140,70 +179,132 @@ async function getImageComparson() {
       hideElement('original-image-error-message');
       displayImage('original-image', orignalImageURL);
     }, 2000);
-
-    // Google Analytics Custom Event
+    
+    // google analytics custom event
     gtag('event', 'user_error', {
       'error_message': 'Generate an image to compare.'
     });
     return;
   }
 
+  // error handling - user error: check if generation is in progress
+  if (placeholderMessage === "Generating comparison..." || placeholderMessage === "Generating description..." || placeholderMessage === "Already in progress...") {
+    placeholderMessage = placeholderMessage === "Already in progress..." ? "Generating comparison..." : placeholderMessage; // placeholderMessage could be "Generating description..." and we want to keep that
+    console.log(placeholderMessage);
+    updateTextElement('vision-output-placeholder', "Already in progress...");
+    displayElement('vision-output-placeholder');
+    setTimeout(() => {
+      updateTextElement('vision-output-placeholder', placeholderMessage);
+    }, 1000);
+    return;
+  }
+
   // update box title
   updateTextElement('vision-output-title', "Comparison");
 
-  // Clear previous description
+  // clear previous description
   updateTextElement('vision-output', "");
 
-  // Create placeholder text while description is being generated
-  updateTextElement('vision-output-placeholder', "generating comparison...");
+  // create placeholder text while description is being generated
+  updateTextElement('vision-output-placeholder', "Generating comparison...");
+  displayElement('vision-output-placeholder');
 
-  // Call server to generate image description
-  const body = { orignalImageURL, generatedImageURL, temperature };
-  const data = await generateImageComparison(body)
+  try {
+    // call server to generate image description
+    const body = { orignalImageURL, generatedImageURL, temperature };
+    const data = await generateImageComparison(body);
+
+    // error handling
+    if (data.error || !data.comparison) {
+      throw new Error(data.error || "Unknown error");
+    }
+    
+    // update client with server response data
+    updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
+    hideElement('vision-output-placeholder');
+    updateTextElement('vision-output', data.comparison);
+    updateRadioForNaturalImages(data.comparison);
   
-  // Update client with server response data
-  updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
-  updateTextElement('vision-output', data.comparison);
-  updateRadioForNaturalImages(data.comparison);
+    // google analytics custom event
+    gtag('event', 'comparison_generated', {
+      'comparison': data.comparison,
+      'original_image_url': orignalImageURL,
+      'generated_image_url': generatedImageURL,
+      'temperature': temperature
+    });
 
-  // Google Analytics Custom Event
-  gtag('event', 'comparison_generated', {
-    'comparison': data.comparison,
-    'original_image_url': orignalImageURL,
-    'generated_image_url': generatedImageURL,
-    'temperature': temperature
-  });
+  } catch (error) {
+    console.error(error);
+    updateTextElement('vision-output-placeholder', "Sorry, there was an error generating the comparison. Please try again.");
+  }
 }
 
 
 // GET IMAGE
 // handle image generation request from client
 async function getImage(id, isVivid) {
-  // clear previous image
-  hideElement('generated-image');
-
+  const placeholderMessage = document.getElementById('new-image-placeholder-message').textContent;
+  
+  // error handling - user error: check if generation is in progress
+  if (placeholderMessage === "Generating image..." || placeholderMessage === "Already in progress...") {
+    updateTextElement('new-image-placeholder-message', "Already in progress...");
+    setTimeout(() => {
+      updateTextElement('new-image-placeholder-message', "Generating image...");
+    }, 1000);
+    return;
+  }
+  
   // determine which prompt to use
+  // description 
   let prompt;
   if (id === 'use-description-btn') {
     prompt = document.getElementById('vision-output').textContent;
-    if (!prompt) {
-      // client-side error handling
-      updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
 
-      // Google Analytics Custom Event
+    // error handling - user error: confirm that a description has been generated
+    if (!prompt) {
+      // if an image exists, only show the placeholder message for 2 seconds
+      if (document.getElementById('generated-image').src) {
+        hideElement('generated-image');
+        updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
+        displayElement('new-image-placeholder-message');
+        setTimeout(() => {
+          hideElement('new-image-placeholder-message');
+          displayElement('generated-image');
+        }, 2000);
+      } else {
+        updateTextElement('new-image-placeholder-message', "You must generate an image description first.");
+        displayElement('new-image-placeholder-message');
+      }
+
+      // google analytics custom event
       gtag('event', 'user_error', {
         'error_message': 'You must generate an image description first.'
       });
       return;
     }
   } 
+
+  // prompt 
   if (id === 'use-prompt-btn') {
     prompt = document.getElementById('prompt-input').value;
-    if (!prompt) {
-      // client-side error handling
-      updateTextElement('new-image-placeholder-message', "You must generate enter a prompt first.");
 
-      // Google Analytics Custom Event
+    // error handling - user error: confirm that a prompt has been entered
+    if (!prompt) {
+      // if an image exists, only show the placeholder message for 2 seconds
+      if (document.getElementById('generated-image').src) {
+        hideElement('generated-image');
+        updateTextElement('new-image-placeholder-message', "You must enter a prompt first.");
+        displayElement('new-image-placeholder-message');
+        setTimeout(() => {
+          hideElement('new-image-placeholder-message');
+          displayElement('generated-image');
+        }, 2000);
+      } else {
+        updateTextElement('new-image-placeholder-message', "You must enter a prompt first.");
+        displayElement('new-image-placeholder-message');
+      }
+
+      // google analytics custom event
       gtag('event', 'user_error', {
         'error_message': 'You must enter a prompt first.'
       });
@@ -211,41 +312,55 @@ async function getImage(id, isVivid) {
     }
   };
 
+
   // determine which style to use
   const style = isVivid ? 'vivid' : 'natural';
   
+  // clear previous image
+  hideElement('generated-image');
+
   // show placeholder message
+  updateTextElement('new-image-placeholder-message', "Generating image...");
   displayElement('new-image-placeholder-message');
-  updateTextElement('new-image-placeholder-message', "generating image...");
 
   // cleanup revised prompt
   updateTextElement('revised-prompt', "");
 
-  // call server to generate image
-  const body = { prompt, style };
-  const data = await generateImage(body);
+  try {
+    // call server to generate image
+    const body = { prompt, style };
+    const data = await generateImage(body);
 
-  // hide the placeholder message once image is generated
-  if (data) {
-    updateTextElement('new-image-placeholder-message', "");
-    hideElement('new-image-placeholder-message');
-  };
+    // error handling
+    if (data.error || !data.imageData || !data.imageData.url || !data.imageData.revised_prompt) {
+      throw new Error(data.error || "Unknown error");
+    }
   
-  // update client with server response data
-  const imageURL = data.imageData.url;
-  const revisedPrompt = data.imageData.revised_prompt;
-  displayImage('generated-image', imageURL);
-  createImageLink('generated-image-link', imageURL);
-  updateTextElement('revised-prompt', revisedPrompt);
-
-  // Google Analytics Custom Event
-  gtag('event', 'image_generated', {
-    'image_url': imageURL,
-    'prompt': prompt,
-    'prompt_type': id === 'use-description-btn' ? 'description' : 'prompt',
-    'style': style,
-    'revised_prompt': revisedPrompt
-  });
+    // hide the placeholder message once image is generated
+    if (data) {
+      updateTextElement('new-image-placeholder-message', "");
+      hideElement('new-image-placeholder-message');
+    };
+    
+    // update client with server response data
+    const imageURL = data.imageData.url;
+    const revisedPrompt = data.imageData.revised_prompt;
+    displayImage('generated-image', imageURL);
+    createImageLink('generated-image-link', imageURL);
+    updateTextElement('revised-prompt', revisedPrompt);
+  
+    // google analytics custom event
+    gtag('event', 'image_generated', {
+      'image_url': imageURL,
+      'prompt': prompt,
+      'prompt_type': id === 'use-description-btn' ? 'description' : 'prompt',
+      'style': style,
+      'revised_prompt': revisedPrompt
+    });
+  } catch (error) {
+    console.error(error);
+    updateTextElement('new-image-placeholder-message', "Sorry, there was an error generating the image. Please try again.");
+  }
 }
 
 
@@ -311,7 +426,7 @@ function copyToClipboard(id) {
   const text = document.getElementById(id).textContent;
   navigator.clipboard.writeText(text);
 
-  // Google Analytics Custom Event
+  // google analytics custom event
   gtag('event', 'text_copied', {
     'text': text
   });
@@ -332,9 +447,6 @@ function updateRadioForNaturalImages(imageDescription) {
     vividRadio.checked = true;
   }
 }
-
-// downloadImage() function is a possible todo 
-// function downloadImage(id) {};
 
 
 // BACKEND REQUESTS
@@ -375,6 +487,23 @@ async function generateImage(body) {
 async function generateImageComparison(body) {
   try {
     const response = await fetch('/vision-comparison', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Server Error:', error);
+  }
+}
+
+async function errorTest(body) {
+  try {
+    const response = await fetch('/error-test', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
