@@ -22,6 +22,7 @@ app.get('/about', (req, res) => {
 // Generate an image description
 app.post('/vision', async (req, res) => {
   const {imageURL, temperature} = req.body;
+  console.log(req.body);
   const key = process.env.OPEN_API_KEY;
   const completionsURL = 'https://api.openai.com/v1/chat/completions'; 
   const visionBody = {

@@ -17,6 +17,7 @@ async function getRandomImage() {
 
     // handle errors
     if (data.error || !data.urls.raw) {
+      console.error(data.error || "No error message from server");
       throw new Error(data.error || "Unknown error");
     }
 
@@ -111,15 +112,16 @@ async function getImageDescription() {
   try {
     // call server to generate image description
     const body = { imageURL, temperature };
-    const data = await generateImageDescription(body)
+    const data = await generateImageDescription(body);
     
     // test error handling
     // const data = await errorTest(body);
 
     // error handling
     if (data.error || !data.description) {
+      console.error(data.error || "No error message from server");
       throw new Error(data.error || "Unknown error");
-    }
+    };
 
     // Update client with server response data
     updateTextElement('vision-output-placeholder', ""); // without a distinct placeholder an image can be generated before the description
@@ -136,7 +138,7 @@ async function getImageDescription() {
   } catch (error) {
     console.error(error);
     updateTextElement('vision-output-placeholder', "Sorry, there was an error generating the description. Please try again.");
-  }
+  };
 };
 
 // GET IMAGE COMPARISON
@@ -214,6 +216,7 @@ async function getImageComparson() {
 
     // error handling
     if (data.error || !data.comparison) {
+      console.error(data.error || "No error message from server");
       throw new Error(data.error || "Unknown error");
     }
     
@@ -310,7 +313,6 @@ async function getImage(id, isVivid) {
     }
   };
 
-
   // determine which style to use
   const style = isVivid ? 'vivid' : 'natural';
   
@@ -331,6 +333,7 @@ async function getImage(id, isVivid) {
 
     // error handling
     if (data.error || !data.imageData || !data.imageData.url || !data.imageData.revised_prompt) {
+      console.error(data.error || "No error message from server");
       throw new Error(data.error || "Unknown error");
     }
   
@@ -363,14 +366,15 @@ async function getImage(id, isVivid) {
 
 
 // TEMPERATURE SLIDER
-const slider = document.getElementById("temp-slider");
-const output = document.getElementById("temp-value");
-
-output.innerHTML = slider.value / 100;
-
-slider.oninput = function() {
-  output.innerHTML = this.value / 100;
-}
+// only run this code on the home page (check that this is not the about page)
+if (!window.location.href.includes('about')) {
+  const slider = document.getElementById("temp-slider");
+  const output = document.getElementById("temp-value");
+  output.innerHTML = 0.5;
+  slider.oninput = function() {
+    output.innerHTML = this.value / 100;
+  }
+};
 
 
 
@@ -461,7 +465,7 @@ async function generateImageDescription(body) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Server Error:', error);
+    console.error('Server Request Error:', error);
   }
 }
 
@@ -478,7 +482,7 @@ async function generateImage(body) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Server Error:', error);
+    console.error('Server Request Error:', error);
   }
 }
 
@@ -495,7 +499,7 @@ async function generateImageComparison(body) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Server Error:', error);
+    console.error('Server Request Error:', error);
   }
 }
 
@@ -512,6 +516,6 @@ async function errorTest(body) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Server Error:', error);
+    console.error('Server Request Error:', error);
   }
 }
