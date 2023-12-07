@@ -89,6 +89,40 @@ OPEN_API_KEY=<YOUR_OPEN_AI_KEY>
 PORT=<YOUR_PORT>
 ```
 
+### Set Up tailwindcss using Tailwind CLI
+Initialize tailwindcss
+
+Run:
+```
+npx tailwindcss init
+```
+
+This will create a `tailwind.config.js` file. It will need to be modified as follows:
+
+```
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./public/*.html", "./public/js/*.js", "./public/css/*.css"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+Run the following to create the `dist` folder that will be populated with the `output.css` file:
+```
+npx tailwindcss -i ./public/css/main.css -o ./public/dist/output.css --watch
+```
+
+### tailwindcss Play CDN 
+**Note:** if you prefer to skip all of above the build steps for tailwindcss, you can simply use the tailwind CDN by the following script tag to the `<head>` of your `index.html` file and the `about.html`` file.
+
+```
+<script src="https://cdn.tailwindcss.com"></script>
+```
+
+
 ### Running the application locally
 
 To start the application run:
@@ -104,6 +138,7 @@ The application will start on `http://localhost:YOUR_PORT` if port is specified 
 - **axios:** To make HTTP requests.
 - **dotenv:** To load environment variables from a `.env` file.
 - **express:** Web application framework for Node.js, used to set up the server.
+- **tailwindcss:** A utility-first CSS framework packed with classes.
 - **nodemon (dev):** Utility that will monitor for any changes in the source and automatically restart the server, used for development.
 
 ## Contributing
