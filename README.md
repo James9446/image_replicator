@@ -89,7 +89,7 @@ OPEN_API_KEY=<YOUR_OPEN_AI_KEY>
 PORT=<YOUR_PORT>
 ```
 
-### Set Up tailwindcss using Tailwind CLI
+### Set up tailwindcss using Tailwind CLI
 Initialize tailwindcss
 
 Run:
@@ -116,7 +116,7 @@ npx tailwindcss -i ./public/css/main.css -o ./public/dist/output.css --watch
 ```
 
 ### tailwindcss Play CDN 
-**Note:** if you prefer to skip all of above the build steps for tailwindcss, you can simply use the tailwind CDN by the following script tag to the `<head>` of your `index.html` file and the `about.html`` file.
+**Note:** if you prefer to skip all of above the build steps for tailwindcss, you can simply use the tailwind CDN by adding the following script tag to the `<head>` of the `index.html` file and the `about.html` file.
 
 ```
 <script src="https://cdn.tailwindcss.com"></script>
