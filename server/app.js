@@ -26,7 +26,8 @@ app.post('/vision', async (req, res) => {
   const key = process.env.OPEN_API_KEY;
   const completionsURL = 'https://api.openai.com/v1/chat/completions'; 
   const visionBody = {
-      "model": "gpt-4-vision-preview",
+      // "model": "gpt-4-vision-preview",
+      "model": "gpt-4o",
       "messages": [
       {
         "role": "user",
@@ -79,7 +80,8 @@ app.post('/vision-comparison', async (req, res) => {
   const key = process.env.OPEN_API_KEY;
   const completionsURL = 'https://api.openai.com/v1/chat/completions'; 
   const visionBody = {
-      "model": "gpt-4-vision-preview",
+      // "model": "gpt-4-vision-preview",
+      "model": "gpt-4o",
       "messages": [
       {
         "role": "user",
