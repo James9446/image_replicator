@@ -101,7 +101,7 @@
 <div class="flex flex-col p-4 md:flex-row justify-center">
   <!-- grey column 1 -->
   <div class="w-full md:mx-4 max-w-2xl p-6 bg-gray-100 rounded-lg shadow-md">
-    <h3 class="text-2xl font-bold mb-4">GPT-4V</h3>
+    <h3 class="text-2xl font-bold mb-4">GPT-4o</h3>
     
     <!-- Image upload options -->
     <div class="flex flex-col mb-4 md:flex-row justify-between items-start md:items-center">
@@ -145,12 +145,17 @@
         </div>
         <!-- Green button -->
         <div class="flex justify-between">
-          <button id="gen-description-btn" onclick="getImageDescription()" class="bg-green-500 w-full mt-4 py-2 px-4 mr-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button" type="button">
+          <button id="rep-image-btn" onclick="replicateImage()" class="bg-green-500 w-full mt-4 py-2 px-4 mr-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button" type="button">
+            Replicate Image
+          </button>
+          <button id="gen-description-btn" onclick="getImageDescription()" class="bg-green-500 w-full mt-4 py-2 px-4 ml-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline" type="button" type="button">
             Generate Description
           </button>
-          <button id="get-comparison-button" onclick="getImageComparson()" class="bg-green-500 w-full mt-4 py-2 px-4 ml-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline">
+
+          <!-- Hiding this button temprarily -->
+          <!-- <button id="get-comparison-button" onclick="getImageComparson()" class="bg-green-500 w-full mt-4 py-2 px-4 ml-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline">
             Generate Comparison
-          </button>
+          </button> -->
         </div>
       </div>
 
@@ -206,6 +211,9 @@
           </div>
           <!-- Green buttons -->
         <div class="flex justify-between">
+          <!-- <button id="get-comparison-button" onclick="getImageComparson()" class="bg-green-500 w-full mt-4 py-2 px-4 mr-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline">
+            Compare Images
+          </button> -->
           <button id="use-description-btn" onclick="getImage(this.id, document.getElementById('vivid-radio').checked)" class="bg-green-500 w-full mt-4 py-2 px-4 mr-2 hover:bg-green-700 text-white font-bold rounded focus:outline-none focus:shadow-outline">
             Use Description
           </button>

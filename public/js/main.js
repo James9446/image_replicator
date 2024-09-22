@@ -68,6 +68,34 @@ async function loadImageFromUrl(imageURL) {
   });
 }
 
+// REPLICATE IMAGE
+// handle image replication request from client
+async function replicateImage() {
+  // First, generate the description
+  await getImageDescription();
+
+  // Check if a description was successfully generated
+  const description = document.getElementById('vision-output').textContent;
+  if (!description) {
+    console.error("Failed to generate description");
+    return;
+  }
+
+  // Determine if the image should be vivid or natural based on the description
+  const isVivid = !description.includes("'natural'");
+
+  // Now generate the image using the description
+  await getImage('use-description-btn', isVivid);
+
+  // Google Analytics custom event
+  gtag('event', 'image_replicated', {
+    'description': description,
+    'original_image_url': document.getElementById('original-image').src,
+    'generated_image_url': document.getElementById('generated-image').src,
+    'style': isVivid ? 'vivid' : 'natural'
+  });
+};
+
 // GET DESCRIPTION
 // handle description generation request from client
 async function getImageDescription() {
