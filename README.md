@@ -4,7 +4,7 @@ Image Replicator is a web application powered by OpenAI’s GPT-4o and DALL-E-3 
 
 ## Features
 
-1. Replaicate a provided image with a single click. 
+1. Replicate a provided image with a single click. 
 2. Generate a detailed description of a provided image.
 3. Adjust the temperature to control the output.
 4. Generate a new image based on the description or provide a custom prompt.
